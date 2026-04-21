@@ -6,11 +6,11 @@ const TOTAL_FRAMES = 240;
 
 // Beat definitions: [startPct, endPct]
 const BEATS = {
-  HERO:     [0,   0.15],
-  CRISIS:   [0.15, 0.40],
+  HERO: [0, 0.15],
+  CRISIS: [0.15, 0.40],
   SOLUTION: [0.40, 0.65],
-  TECH:     [0.65, 0.85],
-  FINALE:   [0.85, 1.00],
+  TECH: [0.65, 0.85],
+  FINALE: [0.85, 1.00],
 };
 
 function beatOpacity(progress, beat) {
@@ -19,27 +19,28 @@ function beatOpacity(progress, beat) {
   const fadeZone = Math.min(0.04, duration * 0.25);
   if (progress < start - fadeZone || progress > end + fadeZone) return 0;
   if (progress < start) return (progress - (start - fadeZone)) / fadeZone;
-  if (progress > end)   return 1 - (progress - end) / fadeZone;
+  if (progress > end) return 1 - (progress - end) / fadeZone;
   return 1;
 }
 
 // Animated counter that increments as opacity rises
 function StatCounter({ target, suffix, label }) {
+  const shadow = '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)';
   return (
     <div className="stat-tile">
-      <div className="stat-value">{target}{suffix}</div>
-      <div className="stat-label">{label}</div>
+      <div className="stat-value" style={{ textShadow: shadow }}>{target}{suffix}</div>
+      <div className="stat-label" style={{ textShadow: shadow }}>{label}</div>
     </div>
   );
 }
 
 export default function ScrollCanvasHero() {
-  const wrapperRef   = useRef(null);
-  const canvasRef    = useRef(null);
-  const framesRef    = useRef([]);
-  const loadedRef    = useRef(0);
-  const rafRef       = useRef(null);
-  const progressRef  = useRef(0);
+  const wrapperRef = useRef(null);
+  const canvasRef = useRef(null);
+  const framesRef = useRef([]);
+  const loadedRef = useRef(0);
+  const rafRef = useRef(null);
+  const progressRef = useRef(0);
 
   // Beat opacity refs (DOM manipulation for perf)
   const beatRefs = useRef({});
@@ -95,7 +96,7 @@ export default function ScrollCanvasHero() {
     const resizeCanvas = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      canvas.width  = window.innerWidth;
+      canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const fi = Math.round(progressRef.current * (TOTAL_FRAMES - 1));
       drawFrame(fi);
@@ -113,8 +114,8 @@ export default function ScrollCanvasHero() {
       const wrapper = wrapperRef.current;
       if (!wrapper) { rafRef.current = requestAnimationFrame(update); return; }
 
-      const rect    = wrapper.getBoundingClientRect();
-      const total   = wrapper.offsetHeight - window.innerHeight;
+      const rect = wrapper.getBoundingClientRect();
+      const total = wrapper.offsetHeight - window.innerHeight;
       const scrolled = Math.max(0, -rect.top);
       const progress = Math.min(1, Math.max(0, scrolled / total));
       progressRef.current = progress;
@@ -189,44 +190,35 @@ export default function ScrollCanvasHero() {
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(3rem, 9vw, 7rem)',
             fontWeight: 900,
-            color: 'var(--plum)',
+            color: 'rgba(241, 234, 234, 0.87)',
             letterSpacing: '-0.02em',
             textAlign: 'center',
             lineHeight: 1,
             position: 'relative',
+            textShadow: '0 2px 24px rgba(244, 244, 244, 1), 0 1px 4px rgba(0, 0, 0, 1)',
           }}>
             VISARJAN
           </h1>
 
           <p style={{
-            fontFamily: 'var(--font-hindi)',
-            fontSize: 'clamp(1.2rem, 3vw, 2rem)',
-            color: 'var(--saffron)',
-            marginTop: 8,
-            letterSpacing: '0.05em',
-            textAlign: 'center',
-          }}>
-            विसर्जन — एक पवित्र विदाई
-          </p>
-
-          <p style={{
             fontFamily: 'var(--font-body)',
             fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-            color: 'var(--warm-gray)',
+            color: 'rgba(252, 122, 22, 1)',
             marginTop: 18,
             maxWidth: 480,
             textAlign: 'center',
             lineHeight: 1.65,
+            textShadow: '0 2px 24px rgba(3, 3, 3, 1), 0 1px 10px rgba(0, 0, 0, 1)',
           }}>
             Give your idol a farewell worthy of the tradition.
             <br />
-            <em style={{ color: 'var(--warm-brown)', fontStyle: 'normal' }}>
+            <em style={{ color: 'rgba(0, 0, 0, 1)', fontStyle: 'normal', textShadow: '0 2px 24px rgba(255, 255, 255, 1), 0 1px 4px rgba(171, 171, 171, 1)' }}>
               The tradition isn't the problem. Modern materials are.
             </em>
           </p>
 
-          <div style={{ marginTop: 36, pointerEvents: 'auto' }}>
-            <Link href="/items" className="cta-btn-warm" id="hero-cta">
+          <div style={{ marginTop: 36, pointerEvents: 'auto', fontFamily: 'var(--font-body)' }}>
+            <Link href="/items" className="cta-btn-warm" id="hero-cta" style={{ textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)' }}>
               What do you have? →
             </Link>
           </div>
@@ -239,7 +231,7 @@ export default function ScrollCanvasHero() {
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
             }}
           >
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.25em', color: 'rgba(61,26,58,0.45)', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>Scroll</span>
+            <span style={{ fontSize: '0.65rem', letterSpacing: '0.25em', color: 'rgba(61,26,58,0.45)', textTransform: 'uppercase', fontFamily: 'var(--font-body)', textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)' }}>Scroll</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(61,26,58,0.4)" strokeWidth="2">
               <path d="M12 5v14M5 12l7 7 7-7" />
             </svg>
@@ -273,22 +265,12 @@ export default function ScrollCanvasHero() {
             color: 'var(--plum)',
             maxWidth: 520,
             position: 'relative',
+            textShadow: '0 2px 10px rgba(255, 251, 251, 1), 0 1px 4px rgba(255, 253, 253, 0)',
           }}>
             A beloved tradition.<br />A growing crisis.
           </h2>
 
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.95rem',
-            color: 'var(--sacred-red)',
-            marginTop: 6,
-            fontStyle: 'italic',
-            letterSpacing: '0.02em',
-          }}>
-            संकट — पर समाधान भी है
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16, maxWidth: 440 }}>
+          <div style={{ display: '', flexDirection: 'column', gap: 8, marginTop: 16, maxWidth: 440, }}>
             {[
               '150M+ Ganesh idols immersed annually across India',
               '100+ water bodies affected each Visarjan season',
@@ -297,9 +279,9 @@ export default function ScrollCanvasHero() {
             ].map((line, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'flex-start', gap: 10,
-                fontFamily: 'var(--font-body)', fontSize: '0.92rem', color: 'var(--warm-gray)',
+                fontFamily: 'var(--font-body)', fontSize: '0.92rem', color: 'rgba(0,0,0,1)', fontWeight: 600,
               }}>
-                <span style={{ color: 'var(--saffron)', fontSize: '1rem', marginTop: 2 }}>◆</span>
+                <span style={{ color: 'var(--saffron)', fontSize: '1rem', marginTop: 2, textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)' }}>•</span>
                 {line}
               </div>
             ))}
@@ -314,6 +296,7 @@ export default function ScrollCanvasHero() {
           <p style={{
             fontFamily: 'var(--font-body)', fontSize: '0.72rem',
             color: 'rgba(107,91,78,0.55)', marginTop: 14, letterSpacing: '0.05em',
+            textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)',
           }}>
             Source: CPCB Data, 2023
           </p>
@@ -344,35 +327,28 @@ export default function ScrollCanvasHero() {
             fontSize: 'clamp(1.6rem, 4vw, 3rem)',
             fontWeight: 700,
             color: 'var(--plum)',
+            textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)',
             maxWidth: 480, textAlign: 'right',
             position: 'relative',
           }}>
             One platform.<br />Every offering. Every route.
           </h2>
 
-          <p style={{
-            fontFamily: 'var(--font-hindi)', fontSize: '1rem',
-            color: 'var(--saffron)', marginTop: 6, textAlign: 'right',
-          }}>
-            समाधान — हर विसर्जन के लिए
-          </p>
-
           <div className="routing-lines" style={{ marginTop: 24, alignItems: 'flex-end', textAlign: 'right', maxWidth: 460 }}>
             {[
-              ['PoP idol',         'Nearest controlled immersion pond'],
-              ['Clay idol',        'Artisan reuse program'],
-              ['Flowers & nirmalya','Phool drop point → incense'],
-              ['Broken idol',      'NGO collection drive, 2 km away'],
+              ['PoP idol', 'Nearest controlled immersion pond'],
+              ['Clay idol', 'Artisan reuse program'],
+              ['Flowers & nirmalya', 'Phool drop point → incense'],
             ].map(([item, route]) => (
               <div key={item} style={{
                 display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 10,
-                fontFamily: 'var(--font-body)', fontSize: '0.93rem', color: 'var(--warm-brown)',
+                fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'rgba(0,0,0,1)', fontWeight: 600,
+                textShadow: '0 2px 14px rgba(255, 255, 255, 1), 0 1px 3px rgba(0,0,0,0.1)',
               }}>
                 <span>
-                  <strong style={{ color: 'var(--plum)' }}>{item}</strong>
-                  <span style={{ color: 'var(--warm-gray)' }}> → {route}</span>
+                  <strong style={{ color: 'var(--plum)', textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)' }}>{item}</strong>
+                  <span style={{ color: 'rgba(0,0,0,1)', textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)' }}> → {route}</span>
                 </span>
-                <span style={{ color: 'var(--saffron)', flexShrink: 0 }}>●</span>
               </div>
             ))}
           </div>
@@ -405,25 +381,20 @@ export default function ScrollCanvasHero() {
             color: 'var(--plum)',
             textAlign: 'center',
             position: 'relative',
+            textShadow: '0 2px 24px rgba(255, 255, 255, 0.94), 0 1px 4px rgba(255, 255, 255, 0.31)',
           }}>
             AI that understands<br />what you have.
           </h2>
 
           <p style={{
-            fontFamily: 'var(--font-hindi)', fontSize: '1rem',
-            color: 'var(--saffron)', marginTop: 6, textAlign: 'center',
-          }}>
-            AI विश्लेषक — सटीक, तुरंत
-          </p>
-
-          <p style={{
             fontFamily: 'var(--font-body)', fontSize: '1rem',
-            color: 'var(--warm-gray)', marginTop: 16,
+            color: 'rgba(255, 255, 255, 1)', marginTop: 16,
             maxWidth: 460, textAlign: 'center', lineHeight: 1.7,
+            textShadow: '0 2px 14px rgba(255, 255, 255, 1), 0 1px 3px rgba(0, 0, 0, 1)',
           }}>
             Photograph your idol. Gemini Vision identifies the material — PoP, clay, metal, or paper pulp — estimates pollution risk, and routes you to the right drop point.
             <br />
-            <strong style={{ color: 'var(--warm-brown)' }}>30 seconds. No app download.</strong>
+            <strong style={{ color: 'rgba(0,0,0,1)', textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)' }}>30 seconds. No app download.</strong>
           </p>
 
           <div className="feature-pills" style={{ marginTop: 28, justifyContent: 'center' }}>
@@ -432,8 +403,8 @@ export default function ScrollCanvasHero() {
               { icon: '🗺️', label: 'Smart Map & Navigation' },
               { icon: '🏆', label: 'Impact Certificate' },
             ].map(p => (
-              <div key={p.label} className="feature-pill" style={{ pointerEvents: 'auto' }}>
-                <span>{p.icon}</span>
+              <div key={p.label} className="feature-pill" style={{ pointerEvents: 'auto', textShadow: '0 2px 14px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.1)' }}>
+                <span style={{ textShadow: 'none' }}>{p.icon}</span>
                 <span>{p.label}</span>
               </div>
             ))}
@@ -460,56 +431,12 @@ export default function ScrollCanvasHero() {
             pointerEvents: 'none',
           }} />
 
-          <p style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(1.4rem, 3.5vw, 2.5rem)',
-            fontWeight: 700,
-            color: 'var(--plum)',
-            textAlign: 'center',
-            maxWidth: 640,
-            position: 'relative',
-          }}>
-            "You kept 2.3 kg of PoP<br />out of the Yamuna."
-          </p>
-
-          <h2 style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'clamp(1rem, 2vw, 1.3rem)',
-            fontWeight: 400,
-            color: 'var(--warm-gray)',
-            textAlign: 'center',
-            maxWidth: 480,
-            marginTop: 14,
-            lineHeight: 1.6,
-            position: 'relative',
-          }}>
-            And gave your Ganesha a farewell worthy of the tradition.
-          </h2>
-
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginTop: 36, pointerEvents: 'auto', position: 'relative' }}>
-            <Link href="/map" className="cta-btn-warm" id="finale-cta">
-              Find Drop Point →
-            </Link>
 
-            <Link href="/certificate" style={{
-              fontFamily: 'var(--font-body)', fontSize: '0.9rem',
-              color: 'var(--saffron)', textDecoration: 'underline',
-              textUnderlineOffset: '3px', cursor: 'pointer',
-            }}>
-              Generate My Impact Certificate
-            </Link>
-
-            <p style={{
-              fontFamily: 'var(--font-body)', fontSize: '0.78rem',
-              color: 'rgba(107,91,78,0.6)', textAlign: 'center',
-              letterSpacing: '0.03em',
-            }}>
-              Free. No app. Works for idols, flowers, prasad, and full pooja sets.
-            </p>
           </div>
         </div>
 
       </div>
-    </div>
+    </div >
   );
 }

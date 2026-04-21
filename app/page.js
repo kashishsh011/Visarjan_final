@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useRef } from 'react';
 import ScrollCanvasHero from '@/components/ScrollCanvasHero';
+import WhatDoYouHave from '@/components/WhatDoYouHave';
 
 /* ── Data ─────────────────────────────────────────── */
 
@@ -15,37 +16,37 @@ const ITEM_PILLS = [
 ];
 
 const PARTNERS = [
-  { name: 'Phool',     emoji: '🌺', desc: 'Flowers → incense & bio-products' },
-  { name: 'eCoexist',  emoji: '♻️', desc: 'PoP collection & landfill diversion' },
+  { name: 'Phool', emoji: '🌺', desc: 'Flowers → incense & bio-products' },
+  { name: 'eCoexist', emoji: '♻️', desc: 'PoP collection & landfill diversion' },
   { name: 'HolyWaste', emoji: '💧', desc: 'Yamuna water quality monitoring' },
   { name: 'Sampurnam', emoji: '🌿', desc: 'Zero-waste Ganesh festival kits' },
 ];
 
 const IMPACT_STATS = [
-  { val: '2.3T',   lbl: 'kg PoP kept out of Yamuna' },
+  { val: '2.3T', lbl: 'kg PoP kept out of Yamuna' },
   { val: '18,400', lbl: 'Families served' },
-  { val: '94K',    lbl: 'Flowers converted by Phool' },
-  { val: '312',    lbl: 'NGO drop points mapped' },
+  { val: '94K', lbl: 'Flowers converted by Phool' },
+  { val: '312', lbl: 'NGO drop points mapped' },
 ];
 
 const WHY_CARDS = [
   {
-    icon: '🏺',
-    title: 'PoP Idols Are Toxic',
-    hindi: 'प्लास्टर ऑफ पेरिस',
-    desc: 'Plaster of Paris never fully dissolves. It releases lead, mercury, and cadmium — sitting on riverbeds for years.',
+    icon: '🥀',
+    hindi: 'रास्ते में छूट गई आस्था',
+    title: 'Abandoned in Plain Sight',
+    desc: 'Broken murtis under trees. Nirmalya heaped at temple gates. Pooja waste left at street corners with nowhere to go. Sacred by intention, forgotten by system.',
   },
   {
-    icon: '🌊',
-    title: 'Yamuna Is Dying',
-    hindi: 'यमुना का शुद्धिकरण',
-    desc: 'Dissolved oxygen collapses to near zero post-Visarjan, killing aquatic life for weeks after immersion.',
+    icon: '☠️',
+    hindi: 'नदियों की कीमत',
+    title: 'Our Rivers Are Paying the Price',
+    desc: 'PoP never dissolves, it sinks releasing lead and mercury into water we call holy. Flowers consume oxygen. What enters the river as offering leaves as poison.',
   },
   {
     icon: '🌱',
-    title: "There's a Better Way",
-    hindi: 'बेहतर विसर्जन',
-    desc: 'NGOs convert flowers to incense, coconut waste to bio-products. With the right route, zero waste is possible.',
+    hindi: 'हरित श्रद्धा',
+    title: 'Faith Can Be Sustainable',
+    desc: 'Flowers become compost. Coconut shells become fuel. Idol clay returns to earth. When sacred waste finds the right hands, nothing is wasted and nothing is lost.',
   },
 ];
 
@@ -120,14 +121,11 @@ export default function LandingPage() {
           SECTION 1.5 — WHY THIS MATTERS (about anchor)
       ════════════════════════════════════════════════ */}
       <section id="about" style={{ background: 'var(--warm-white)', padding: 'clamp(60px,8vw,100px) clamp(20px,5vw,80px)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <h2 className="section-title">Why This Matters</h2>
-            <p style={{ fontFamily: 'var(--font-hindi)', color: 'var(--saffron)', marginTop: 6, fontSize: '1.05rem' }}>
-              यह क्यों ज़रूरी है
-            </p>
-            <p style={{ fontFamily: 'var(--font-body)', color: 'var(--warm-gray)', marginTop: 14, maxWidth: 520, margin: '14px auto 0' }}>
-              Every Visarjan, millions of idols dissolve toxic chemicals into India's sacred rivers. Here's what we're up against — and what we can do together.
+            <h2 className="section-title">Why This Matters?</h2>
+            <p style={{ fontFamily: 'var(--font-body)', color: 'var(--warm-gray)', marginTop: 14, maxWidth: 550, margin: '14px auto 0' }}>
+              Devotion is daily. So is the waste it leaves behind. We're here for both.
             </p>
           </div>
 
@@ -156,47 +154,7 @@ export default function LandingPage() {
           SECTION 2 — WHAT DO YOU HAVE? (Discovery)
       ════════════════════════════════════════════════ */}
       <section id="discover" ref={discoverRef} style={{ padding: 'clamp(60px,8vw,100px) clamp(20px,5vw,80px)' }}>
-        <div style={{ maxWidth: 920, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <h2 className="section-title">What Do You Have?</h2>
-            <p style={{ fontFamily: 'var(--font-hindi)', color: 'var(--saffron)', marginTop: 6, fontSize: '1.05rem' }}>
-              आपके पास क्या है?
-            </p>
-            <p style={{ fontFamily: 'var(--font-body)', color: 'var(--warm-gray)', marginTop: 14, maxWidth: 480, margin: '14px auto 0' }}>
-              Select what you want to dispose, enter your Delhi locality, and we'll show you the nearest responsible drop points.
-            </p>
-          </div>
-
-          {/* Pill grid */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', marginBottom: 32 }}>
-            {ITEM_PILLS.map(pill => (
-              <Link
-                key={pill.label}
-                href={pill.label.includes('AI') ? '/items' : `/items?item=${encodeURIComponent(pill.label)}`}
-                className="pill-btn"
-                style={{ textDecoration: 'none' }}
-                id={`pill-${pill.label.replace(/\s+/g, '-').toLowerCase()}`}
-              >
-                <span>{pill.emoji}</span>
-                <span>{pill.label}</span>
-              </Link>
-            ))}
-          </div>
-
-          {/* Location input + CTA */}
-          <div style={{ display: 'flex', gap: 12, maxWidth: 560, margin: '0 auto', flexWrap: 'wrap' }}>
-            <input
-              type="text"
-              className="vis-input"
-              placeholder="Enter your Delhi locality — e.g. Lajpat Nagar"
-              id="locality-input"
-              style={{ flex: 1 }}
-            />
-            <Link href="/map" className="cta-btn-warm" id="show-drop-points" style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}>
-              Show me drop points
-            </Link>
-          </div>
-        </div>
+        <WhatDoYouHave />
       </section>
 
       <SectionDivider />

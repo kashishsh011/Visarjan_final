@@ -47,8 +47,10 @@ export default function Navbar() {
         <span style={{
           fontFamily: 'var(--font-display)',
           fontWeight: 700,
-          fontSize: '1.2rem',
+          fontSize: '1.5rem',
           color: 'var(--plum)',
+          textShadow: '0 0 10px rgba(139, 69, 19, 0.3), 0 0 20px rgba(139, 69, 19, 0.2)',
+          transition: 'text-shadow 0.3s ease',
         }}>
           Visarjan
         </span>
@@ -58,6 +60,8 @@ export default function Navbar() {
           fontSize: '0.9rem',
           color: 'var(--saffron)',
           marginLeft: 4,
+          textShadow: '0 0 8px rgba(255, 165, 0, 0.4), 0 0 16px rgba(255, 165, 0, 0.2)',
+          transition: 'text-shadow 0.3s ease',
         }}>
           विसर्जन
         </span>
