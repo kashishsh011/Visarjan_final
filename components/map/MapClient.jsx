@@ -1,6 +1,7 @@
 'use client';     //map-client.jsx//
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 export const NGO_POINTS = [
@@ -14,44 +15,186 @@ export const NGO_POINTS = [
   { name: "EcoVisarjan - Janakpuri", lat: 28.6219, lng: 77.0878, materials: ["Clay Idol", "Flowers"], timing: "6am–8pm" },
 ];
 
-function orangeIcon() {
+// ── Saffron drop-point pin ────────────────────────────────────────────────
+function saffronPin() {
   return L.divIcon({
-    html: `<div style="width:30px;height:30px;background:radial-gradient(circle at 40% 35%,#FFD700,#FF6B00);border-radius:50%;border:2.5px solid rgba(255,255,255,0.85);box-shadow:0 0 18px rgba(255,107,0,0.7),0 2px 8px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:13px;">🌸</div>`,
-    className: '', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -18],
+    html: `
+      <div style="position:relative;width:36px;height:44px;">
+        <div style="
+          width:36px;height:36px;
+          background:linear-gradient(135deg,#E8871A,#FFB347);
+          border-radius:50% 50% 50% 0;
+          transform:rotate(-45deg);
+          border:3px solid white;
+          box-shadow:0 4px 16px rgba(232,135,26,0.55), 0 2px 6px rgba(0,0,0,0.18);
+          position:absolute;top:0;left:0;
+        "></div>
+        <div style="
+          width:10px;height:10px;
+          background:white;
+          border-radius:50%;
+          position:absolute;
+          top:13px;left:13px;
+          opacity:0.9;
+        "></div>
+      </div>
+    `,
+    className: '',
+    iconSize: [36, 44],
+    iconAnchor: [18, 44],
+    popupAnchor: [0, -46],
   });
 }
 
-export default function MapClient({ filterMaterials = [] }) {
-  const icon = typeof window !== 'undefined' ? orangeIcon() : null;
+// ── Blue "you are here" pulsing dot ──────────────────────────────────────
+function userPin() {
+  return L.divIcon({
+    html: `
+      <style>
+        @keyframes youPulse {
+          0%   { transform: scale(1);   opacity: 0.6; }
+          70%  { transform: scale(2.2); opacity: 0; }
+          100% { transform: scale(2.2); opacity: 0; }
+        }
+      </style>
+      <div style="position:relative;width:28px;height:28px;">
+        <!-- Pulse ring -->
+        <div style="
+          width:28px;height:28px;
+          background:rgba(66,133,244,0.35);
+          border-radius:50%;
+          position:absolute;
+          animation: youPulse 2s ease-out infinite;
+        "></div>
+        <!-- Solid dot -->
+        <div style="
+          width:16px;height:16px;
+          background:#4285F4;
+          border:3px solid white;
+          border-radius:50%;
+          position:absolute;
+          top:6px;left:6px;
+          box-shadow:0 2px 8px rgba(66,133,244,0.55);
+        "></div>
+      </div>
+    `,
+    className: '',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -16],
+  });
+}
+
+// ── Inner component: re-centres map when userLocation changes ─────────────
+function RecenterMap({ center, zoom }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) map.setView(center, zoom, { animate: true, duration: 0.8 });
+  }, [center[0], center[1], zoom]); // eslint-disable-line
+  return null;
+}
+
+// ── Main export ───────────────────────────────────────────────────────────
+export default function MapClient({ filterMaterials = [], userLocation = null }) {
+  const dropIcon = typeof window !== 'undefined' ? saffronPin() : null;
+  const myDotIcon = typeof window !== 'undefined' ? userPin() : null;
+
   const visible = filterMaterials.length === 0
     ? NGO_POINTS
     : NGO_POINTS.filter(p => p.materials.some(m => filterMaterials.includes(m)));
 
+  // Centre on user's locality if known, otherwise default Delhi centre
+  const mapCenter = userLocation
+    ? [userLocation.lat, userLocation.lng]
+    : [28.6139, 77.2090];
+  const mapZoom = userLocation ? 13 : 11;
+
   return (
-    <MapContainer center={[28.6139, 77.2090]} zoom={11}
-      style={{ width: '100%', height: '100%', borderRadius: 16 }} zoomControl>
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-      />
-      {icon && visible.map((pt, i) => (
-        <Marker key={i} position={[pt.lat, pt.lng]} icon={icon}>
-          <Popup>
-            <div style={{ fontFamily: 'serif', minWidth: 210 }}>
-              <div style={{ fontFamily: '"Cinzel Decorative", serif', fontSize: '0.82rem', color: '#FFB300', marginBottom: 6, fontWeight: 700, lineHeight: 1.4 }}>
-                {pt.name}
+    <>
+      <style>{`
+        .leaflet-popup-content-wrapper {
+          background: #FFF8F0 !important;
+          border: 1.5px solid rgba(232,135,26,0.25) !important;
+          border-radius: 14px !important;
+          box-shadow: 0 8px 32px rgba(61,26,58,0.13) !important;
+          padding: 0 !important;
+        }
+        .leaflet-popup-content { margin: 0 !important; padding: 0 !important; }
+        .leaflet-popup-tip { background: #FFF8F0 !important; }
+        .leaflet-popup-close-button { color: #E8871A !important; font-size: 18px !important; top: 8px !important; right: 10px !important; }
+        .leaflet-control-zoom a { background: #FFF8F0 !important; color: #3D1A3A !important; border-color: rgba(232,135,26,0.3) !important; font-weight: 700 !important; }
+        .leaflet-control-zoom a:hover { background: rgba(232,135,26,0.12) !important; }
+        .leaflet-tile-pane { filter: saturate(0.85) brightness(1.02); }
+      `}</style>
+
+      <MapContainer
+        center={mapCenter}
+        zoom={mapZoom}
+        style={{ width: '100%', height: '100%', borderRadius: 16 }}
+        zoomControl
+      >
+        {/* ✅ Re-centres smoothly whenever userLocation changes */}
+        <RecenterMap center={mapCenter} zoom={mapZoom} />
+
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+        />
+
+        {/* ✅ Blue "You are here" marker — shown first, on top */}
+        {myDotIcon && userLocation && (
+          <Marker position={[userLocation.lat, userLocation.lng]} icon={myDotIcon} zIndexOffset={1000}>
+            <Popup>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", padding: '14px 16px', color: '#3D1A3A', minWidth: 160 }}>
+                <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: 4 }}>
+                  📍 Your location
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#6B5B4E' }}>
+                  {userLocation.name}
+                </div>
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'rgba(255,245,224,0.75)', marginBottom: 3 }}>⏰ {pt.timing}</div>
-              <div style={{ fontSize: '0.78rem', color: 'rgba(255,245,224,0.65)', marginBottom: 12 }}>📦 {pt.materials.join(', ')}</div>
-              <a href={`https://www.google.com/maps/dir/?api=1&destination=${pt.lat},${pt.lng}`}
-                target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-block', padding: '7px 16px', background: 'linear-gradient(135deg,#FF6B00,#FFB300)', color: 'white', borderRadius: 20, fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none' }}>
-                Get Directions →
-              </a>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+            </Popup>
+          </Marker>
+        )}
+
+        {/* Saffron drop-point markers */}
+        {dropIcon && visible.map((pt, i) => (
+          <Marker key={i} position={[pt.lat, pt.lng]} icon={dropIcon}>
+            <Popup>
+              <div style={{
+                fontFamily: "'DM Sans', Georgia, serif",
+                minWidth: 210, padding: '16px 18px', color: '#3D1A3A',
+              }}>
+                <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#3D1A3A', marginBottom: 6, lineHeight: 1.4, paddingRight: 16 }}>
+                  {pt.name}
+                </div>
+                <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(232,135,26,0.4), transparent)', marginBottom: 8 }} />
+                <div style={{ fontSize: '0.78rem', color: '#6B5B4E', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span>⏰</span> {pt.timing}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#6B5B4E', marginBottom: 12, display: 'flex', alignItems: 'flex-start', gap: 5 }}>
+                  <span>📦</span>
+                  <span>{pt.materials.join(', ')}</span>
+                </div>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${pt.lat},${pt.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block', padding: '7px 18px',
+                    background: 'linear-gradient(135deg, #E8871A, #FFB347)',
+                    color: 'white', borderRadius: 50, fontSize: '0.75rem',
+                    fontWeight: 700, textDecoration: 'none',
+                    boxShadow: '0 2px 8px rgba(232,135,26,0.35)',
+                  }}
+                >
+                  Get Directions →
+                </a>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </>
   );
 }

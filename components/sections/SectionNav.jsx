@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 const LINKS = [
     { label: 'Why It Matters', id: 'about' },
     { label: 'What Do You Have', id: 'what-do-you-have' },
-    { label: 'Drop Points', id: 'map-section' },
+    { label: 'Drop Points', id: 'drop-points-section' },
     { label: 'Community Impact', id: 'impact-section' },
     { label: 'Certificate', id: 'certificate-section' },
     { label: 'Join', id: 'partner-section' },

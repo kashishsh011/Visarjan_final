@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import ScrollCanvasHero from '@/components/canvas/ScrollCanvasHero';
 import WhatDoYouHave from '@/components/sections/WhatDoYouHave';
 import SectionNav from '@/components/sections/SectionNav';
+import DropPointsSection from '@/components/sections/DropPointsSection';
 
 /* ── Data ─────────────────────────────────────────── */
 
@@ -79,32 +80,6 @@ function CounterStrip() {
     );
 }
 
-// ✅ MapClient is now correctly defined OUTSIDE the page return
-function MapPreview() {
-    return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            gap: 12,
-            color: '#6B5B4E',
-        }}>
-            <div style={{ fontSize: '3rem' }}>🗺️</div>
-            <p style={{ fontFamily: 'serif', fontSize: '1rem', color: '#3D1A3A' }}>
-                Map loading...
-            </p>
-            <Link href="/map" style={{
-                padding: '10px 24px', background: '#FF6B00', color: 'white',
-                borderRadius: 50, textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem',
-            }}>
-                Open Full Map →
-            </Link>
-        </div>
-    );
-}
-
 /* ── Page ─────────────────────────────────────────── */
 
 export default function LandingPage() {
@@ -162,39 +137,9 @@ export default function LandingPage() {
             <SectionDivider />
 
             {/* ════════════════════════════════════════════════
-          SECTION 3 — DROP POINTS MAP
+          SECTION 3 — DROP POINTS (smart, URL-driven)
       ════════════════════════════════════════════════ */}
-            <section id="map-section" style={{ padding: 'clamp(40px,6vw,80px) clamp(20px,5vw,80px)' }}>
-                <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: 36 }}>
-                        <h2 className="section-title">Drop Points Near You</h2>
-                        <p style={{ fontFamily: 'var(--font-hindi)', color: 'var(--saffron)', marginTop: 6, fontSize: '1.05rem' }}>
-                            नज़दीकी संग्रह केंद्र
-                        </p>
-                        <p style={{ fontFamily: 'var(--font-body)', color: 'var(--warm-gray)', marginTop: 12 }}>
-                            Verified NGO collection points across Delhi — filtered by material type, open today.
-                        </p>
-                    </div>
-
-                    {/* Map preview card */}
-                    <div style={{
-                        border: '1px solid rgba(232,135,26,0.2)',
-                        borderRadius: 20,
-                        overflow: 'hidden',
-                        height: 420,
-                        position: 'relative',
-                        background: '#f5eaf7',
-                    }}>
-                        <MapPreview />
-                    </div>
-
-                    <div style={{ textAlign: 'center', marginTop: 24 }}>
-                        <Link href="/map" className="cta-btn-warm" id="open-full-map" style={{ textDecoration: 'none' }}>
-                            Open Full Map →
-                        </Link>
-                    </div>
-                </div>
-            </section>
+            <DropPointsSection />
 
             <SectionDivider />
 
