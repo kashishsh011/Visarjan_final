@@ -1,34 +1,34 @@
-'use client';
+'use client';     //what-do-you-have.jsx//
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 const C = {
-  cream:        '#F0E2EE', 
-  saffron:      '#D4881A',
-  saffronPale:  '#FBE9C4',
-  terracotta:   '#2D1B4E', 
-  brownDeep:    '#2D1B4E',
-  brownMid:     'rgba(45, 27, 78, 0.8)',
-  brownLt:      'rgba(45, 27, 78, 0.5)',
-  creamBorder:  'rgba(45, 27, 78, 0.12)',
+  cream: '#F0E2EE',
+  saffron: '#D4881A',
+  saffronPale: '#FBE9C4',
+  terracotta: '#2D1B4E',
+  brownDeep: '#2D1B4E',
+  brownMid: 'rgba(45, 27, 78, 0.8)',
+  brownLt: 'rgba(45, 27, 78, 0.5)',
+  creamBorder: 'rgba(45, 27, 78, 0.12)',
 };
 
 const ITEMS = [
-  { key: 'pop-idol',   label: 'PoP Idol',          icon: '🏺' },
-  { key: 'clay-idol',  label: 'Clay Idol',          icon: '🪔' },
-  { key: 'flowers',    label: 'Flowers / Nirmalya', icon: '🌸' },
-  { key: 'coconut',    label: 'Coconut / Prasad',   icon: '🥥' },
-  { key: 'pooja-set',  label: 'Full Pooja Set',     icon: '🙏' },
+  { key: 'pop-idol', label: 'PoP Idol', icon: '🏺' },
+  { key: 'clay-idol', label: 'Clay Idol', icon: '🪔' },
+  { key: 'flowers', label: 'Flowers / Nirmalya', icon: '🌸' },
+  { key: 'coconut', label: 'Coconut / Prasad', icon: '🥥' },
+  { key: 'pooja-set', label: 'Full Pooja Set', icon: '🙏' },
 ];
 
 const LOCALITIES = [
-  { name: 'Lajpat Nagar',    zone: 'South Delhi' },
-  { name: 'Dwarka',          zone: 'South West Delhi' },
-  { name: 'Chandni Chowk',   zone: 'Central Delhi' },
-  { name: 'Karol Bagh',      zone: 'Central Delhi' },
-  { name: 'Saket',           zone: 'South Delhi' },
-  { name: 'Rohini',          zone: 'North West Delhi' },
-  { name: 'Janakpuri',       zone: 'West Delhi' },
+  { name: 'Lajpat Nagar', zone: 'South Delhi' },
+  { name: 'Dwarka', zone: 'South West Delhi' },
+  { name: 'Chandni Chowk', zone: 'Central Delhi' },
+  { name: 'Karol Bagh', zone: 'Central Delhi' },
+  { name: 'Saket', zone: 'South Delhi' },
+  { name: 'Rohini', zone: 'North West Delhi' },
+  { name: 'Janakpuri', zone: 'West Delhi' },
 ];
 
 export default function WhatDoYouHave() {
@@ -75,7 +75,8 @@ export default function WhatDoYouHave() {
 
   return (
     <div className="vis-discover-layer" style={{ position: 'relative', overflow: 'hidden', borderRadius: 40, backgroundColor: C.cream, margin: '0 auto', maxWidth: 1240, border: `1px solid rgba(45,27,78,0.05)`, padding: 'clamp(40px, 8vw, 80px) clamp(20px, 4vw, 40px)' }}>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .vis-discover-layer .abs-bg {
           position: absolute;
           inset: 0;
@@ -152,7 +153,7 @@ export default function WhatDoYouHave() {
         
         @keyframes vdFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .vd-anim-up { animation: vdFadeUp 0.6s ease both; }
-      `}}/>
+      `}} />
 
       <div className="abs-bg" style={{ backgroundImage: "url('/visarjan-scene.png')", backgroundSize: 'cover', backgroundPosition: 'center top', opacity: 0.1 }} />
       <div className="abs-bg" style={{ background: 'linear-gradient(to bottom, rgba(240,226,238,0.55) 0%, rgba(240,226,238,0.38) 40%, rgba(240,226,238,0.85) 100%)' }} />
@@ -181,7 +182,7 @@ export default function WhatDoYouHave() {
           <span style={{ display: 'block', fontSize: '0.7rem', fontWeight: 600, color: C.brownLt, textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 16 }}>
             Select all that apply
           </span>
-          
+
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginBottom: 24 }}>
             {ITEMS.map(item => {
               const active = selected.has(item.key);
@@ -223,8 +224,8 @@ export default function WhatDoYouHave() {
             Your Delhi locality
           </span>
           <div className="vd-input-wrap">
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="vd-input"
               placeholder="e.g. Lajpat Nagar, Dwarka…"
               value={locality}
@@ -246,7 +247,7 @@ export default function WhatDoYouHave() {
                 ))}
               </div>
             )}
-            <button 
+            <button
               onClick={handleContinue}
               className={`vd-cta ${isFormValid ? 'valid' : 'disabled'}`}
             >

@@ -1,4 +1,4 @@
-'use client';
+'use client';     //stat-tile.jsx//
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 

@@ -1,4 +1,4 @@
-'use client';
+'use client';        //certificate-card.jsx//
 import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 
