@@ -1,18 +1,170 @@
 'use client';     //map-client.jsx//
 import 'leaflet/dist/leaflet.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
-export const NGO_POINTS = [
-  { name: "Phool NGO - Connaught Place", lat: 28.6315, lng: 77.2167, materials: ["Flowers", "Nirmalya"], timing: "7am–8pm" },
-  { name: "eCoexist Hub - Lajpat Nagar", lat: 28.5672, lng: 77.2436, materials: ["PoP Idol", "Clay Idol"], timing: "8am–7pm" },
-  { name: "Holywaste - Dwarka", lat: 28.5921, lng: 77.0460, materials: ["Full Pooja Set", "Coconut"], timing: "6am–9pm" },
-  { name: "Sampurnam - Rohini", lat: 28.7041, lng: 77.1025, materials: ["Flowers", "Prasad"], timing: "7am–8pm" },
-  { name: "GreenVidai - Saket", lat: 28.5245, lng: 77.2066, materials: ["PoP Idol", "Clay Idol", "Flowers"], timing: "9am–6pm" },
-  { name: "YamunaClean - Noida Sec 18", lat: 28.5706, lng: 77.3219, materials: ["Full Pooja Set"], timing: "8am–8pm" },
-  { name: "PrakritiSeva - Pitampura", lat: 28.7027, lng: 77.1311, materials: ["Nirmalya", "Coconut"], timing: "7am–7pm" },
-  { name: "EcoVisarjan - Janakpuri", lat: 28.6219, lng: 77.0878, materials: ["Clay Idol", "Flowers"], timing: "6am–8pm" },
+// ── Hardcoded fallback data (also used by seed script) ────────────────────
+const NGO_POINTS_FALLBACK = [
+  // Delhi NCR
+  {
+    id: 1, name: "Yamuna Nadi Sewa Samiti",
+    lat: 28.5677, lng: 77.2433,
+    address: "Lajpat Nagar II, New Delhi",
+    timing: "9 AM – 6 PM, Mon–Sat",
+    materials: ["PoP Idol", "Flowers", "Coconut"],
+    phone: "+91-11-29834721",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 2, name: "Chintan Environmental Research",
+    lat: 28.5244, lng: 77.2066,
+    address: "Saket, New Delhi",
+    timing: "10 AM – 5 PM, Mon–Fri",
+    materials: ["Flowers", "Full Pooja Set"],
+    phone: "+91-11-40615024",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 3, name: "Wild Delhi",
+    lat: 28.7041, lng: 77.1025,
+    address: "Rohini Sector 9, New Delhi",
+    timing: "8 AM – 7 PM, Daily",
+    materials: ["Clay Idol", "Flowers", "Coconut"],
+    phone: "+91-98101-23456",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 4, name: "Waste Warriors Society",
+    lat: 28.5921, lng: 77.0460,
+    address: "Dwarka Sector 6, New Delhi",
+    timing: "9 AM – 5 PM, Mon–Sat",
+    materials: ["PoP Idol", "Clay Idol", "Full Pooja Set"],
+    phone: "+91-11-25087432",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 5, name: "Delhi Greens",
+    lat: 28.6080, lng: 77.2940,
+    address: "Mayur Vihar Phase 1, New Delhi",
+    timing: "10 AM – 6 PM, Daily",
+    materials: ["Flowers", "Coconut", "Full Pooja Set"],
+    phone: "+91-98711-34567",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 6, name: "Paryavaran Mitra",
+    lat: 28.6519, lng: 77.1909,
+    address: "Karol Bagh, New Delhi",
+    timing: "9 AM – 4 PM, Mon–Sat",
+    materials: ["PoP Idol", "Flowers"],
+    phone: "+91-11-25714321",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 7, name: "Earth Saviours Foundation",
+    lat: 28.5355, lng: 77.3910,
+    address: "Sector 44, Noida",
+    timing: "8 AM – 6 PM, Daily",
+    materials: ["Clay Idol", "PoP Idol", "Flowers", "Coconut"],
+    phone: "+91-98102-65478",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 8, name: "Haritima",
+    lat: 28.4595, lng: 77.0266,
+    address: "DLF Phase 2, Gurgaon",
+    timing: "9 AM – 5 PM, Mon–Sat",
+    materials: ["Full Pooja Set", "Flowers"],
+    phone: "+91-98103-12345",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  // Delhi NCR — newly verified
+  {
+    id: 9, name: "Aaruhi Enterprises (SavePrithvi Network)",
+    lat: 28.5400, lng: 77.1300,
+    address: "Sheetla Colony, Block-E, New Delhi",
+    timing: "Ongoing temple pickups — call to confirm schedule",
+    materials: ["Flowers"],
+    phone: "+91-79821-02228",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  {
+    id: 10, name: "Visarjan.in (Doorstep Pickup)",
+    lat: 28.6692, lng: 77.4538,
+    address: "Ghaziabad / Noida / Greater Noida — doorstep pickup service",
+    timing: "Book via visarjan.in; special drives during Aug–Oct",
+    materials: ["PoP Idol", "Clay Idol", "Flowers", "Full Pooja Set"],
+    phone: "",
+    city: "Delhi", type: "year_round", verified: true,
+  },
+  // Mumbai
+  {
+    id: 11, name: "BMC Artificial Pond Network",
+    lat: 19.0760, lng: 72.8777,
+    address: "288+ locations citywide — find nearest via WhatsApp 8999-22-8999",
+    timing: "Festival season: late Aug – early Sep (Ganesh Chaturthi)",
+    materials: ["PoP Idol", "Clay Idol"],
+    phone: "+91-89992-28999",
+    city: "Mumbai", type: "festival", verified: true,
+  },
+  {
+    id: 12, name: "Punaravartan by eCoexist",
+    lat: 19.0178, lng: 72.8478,
+    address: "Mumbai (citywide drives during festival close)",
+    timing: "Active at end of Ganesh Chaturthi festival each year",
+    materials: ["Clay Idol"],
+    phone: "+91-90491-46644",
+    city: "Mumbai", type: "festival", verified: true,
+  },
+  // Bengaluru
+  {
+    id: 13, name: "HSR Citizens Forum",
+    lat: 12.9220, lng: 77.6510,
+    address: "#963, 24th Cross, 16th Main, HSR Layout Sector 3, Bengaluru",
+    timing: "Ongoing — contact hsrcitizenforum@gmail.com for schedule",
+    materials: ["Clay Idol", "PoP Idol", "Flowers", "Full Pooja Set"],
+    phone: "",
+    city: "Bengaluru", type: "year_round", verified: true,
+  },
+  {
+    id: 14, name: "BBMP Eco-Immersion Centres",
+    lat: 12.9716, lng: 77.5946,
+    address: "41 lakes + 462 mobile tanks citywide — check apps.bbmpgov.in for nearest",
+    timing: "Festival season: Ganesh Chaturthi (Aug–Sep)",
+    materials: ["Clay Idol"],
+    phone: "",
+    city: "Bengaluru", type: "festival", verified: true,
+  },
+  // Hyderabad
+  {
+    id: 15, name: "HolyWaste by Oorvi Sustainable Concepts",
+    lat: 17.3850, lng: 78.4860,
+    address: "Padmarao Nagar / Banjara Hills area, Hyderabad",
+    timing: "Daily, year-round — collects from 40+ temples",
+    materials: ["Flowers"],
+    phone: "+91-93903-13664",
+    city: "Hyderabad", type: "year_round", verified: true,
+  },
+  {
+    id: 16, name: "GHMC Immersion Points",
+    lat: 17.3616, lng: 78.4747,
+    address: "73+ points citywide — check GHMC portal for nearest zone",
+    timing: "Festival seasons: Ganesh Chaturthi and Durga Puja",
+    materials: ["PoP Idol", "Clay Idol"],
+    phone: "",
+    city: "Hyderabad", type: "festival", verified: true,
+  },
+  // Chennai
+  {
+    id: 17, name: "OSR Trust",
+    lat: 13.0418, lng: 80.2341,
+    address: "Citywide collection service — book via osrtrust.com",
+    timing: "Ongoing — contact for pickup schedule",
+    materials: ["PoP Idol", "Clay Idol", "Flowers", "Full Pooja Set"],
+    phone: "",
+    city: "Chennai", type: "year_round", verified: true,
+  },
 ];
 
 // ── Saffron drop-point pin ────────────────────────────────────────────────
@@ -99,15 +251,24 @@ export default function MapClient({ filterMaterials = [], userLocation = null })
   const dropIcon = typeof window !== 'undefined' ? saffronPin() : null;
   const myDotIcon = typeof window !== 'undefined' ? userPin() : null;
 
-  const visible = filterMaterials.length === 0
-    ? NGO_POINTS
-    : NGO_POINTS.filter(p => p.materials.some(m => filterMaterials.includes(m)));
+  // Fetch live NGO data from API, fall back to hardcoded data
+  const [ngoPoints, setNgoPoints] = useState(NGO_POINTS_FALLBACK);
+  useEffect(() => {
+    fetch('/api/ngos')
+      .then(r => r.json())
+      .then(res => { if (res.success && res.data.length > 0) setNgoPoints(res.data) })
+      .catch(() => {}) // silently fall back to hardcoded data
+  }, []);
 
-  // Centre on user's locality if known, otherwise default Delhi centre
+  const visible = filterMaterials.length === 0
+    ? ngoPoints
+    : ngoPoints.filter(p => p.materials.some(m => filterMaterials.includes(m)));
+
+  // Centre on user's locality if known, otherwise default India centre
   const mapCenter = userLocation
     ? [userLocation.lat, userLocation.lng]
-    : [28.6139, 77.2090];
-  const mapZoom = userLocation ? 13 : 11;
+    : [22.9074, 79.0730];
+  const mapZoom = userLocation ? 13 : 5;
 
   return (
     <>
@@ -159,7 +320,7 @@ export default function MapClient({ filterMaterials = [], userLocation = null })
 
         {/* Saffron drop-point markers */}
         {dropIcon && visible.map((pt, i) => (
-          <Marker key={i} position={[pt.lat, pt.lng]} icon={dropIcon}>
+          <Marker key={pt.id || i} position={[pt.lat, pt.lng]} icon={dropIcon}>
             <Popup>
               <div style={{
                 fontFamily: "'DM Sans', Georgia, serif",

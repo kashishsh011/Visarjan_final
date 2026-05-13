@@ -2,16 +2,17 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import StatTile from '@/components/sections/StatTile';
+import { IMPACT_STATS } from '@/lib/data';
 
 const COMMUNITY_CARDS = [
-    { name: 'Riya Sharma', area: 'Lajpat Nagar', material: 'PoP Idol', date: 'Apr 14', color: 'linear-gradient(135deg, #FF6B00 0%, #FFB300 100%)' },
-    { name: 'Amit Verma', area: 'Dwarka', material: 'Flowers + Coconut', date: 'Apr 13', color: 'linear-gradient(135deg, #8B1A1A 0%, #FF6B00 100%)' },
-    { name: 'Priya Nair', area: 'Rohini', material: 'Full Pooja Set', date: 'Apr 14', color: 'linear-gradient(135deg, #FFB300 0%, #8B1A1A 100%)' },
-    { name: 'Kiran Joshi', area: 'Saket', material: 'Clay Idol', date: 'Apr 12', color: 'linear-gradient(135deg, #FF6B00 0%, #FFD700 100%)' },
-    { name: 'Sunil Kapoor', area: 'Pitampura', material: 'Nirmalya', date: 'Apr 15', color: 'linear-gradient(135deg, #8B1A1A 0%, #FFB300 100%)' },
-    { name: 'Meera Das', area: 'Janakpuri', material: 'PoP Idol + Flowers', date: 'Apr 13', color: 'linear-gradient(135deg, #FFB300 0%, #FF6B00 100%)' },
-    { name: 'Rahul Singh', area: 'Connaught Place', material: 'Coconut + Prasad', date: 'Apr 14', color: 'linear-gradient(135deg, #FF6B00 0%, #8B1A1A 100%)' },
-    { name: 'Anjali Gupta', area: 'Greater Kailash', material: 'Full Pooja Set', date: 'Apr 15', color: 'linear-gradient(135deg, #FFD700 0%, #FF6B00 100%)' },
+    { name: "Priya S.",  area: "Andheri West, Mumbai",     material: "Ganesh Idol (PoP)",   date: "Sep 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #FFB300 100%)' },
+    { name: "Arjun M.",  area: "HSR Layout, Bengaluru",    material: "Full Pooja Set",       date: "Sep 2024", color: 'linear-gradient(135deg, #8B1A1A 0%, #FF6B00 100%)' },
+    { name: "Fatima K.", area: "Banjara Hills, Hyderabad", material: "Temple Flowers",       date: "Oct 2024", color: 'linear-gradient(135deg, #FFB300 0%, #8B1A1A 100%)' },
+    { name: "Rahul D.",  area: "Noida Sector 62, Delhi",   material: "Clay Idol",            date: "Oct 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #FFD700 100%)' },
+    { name: "Sneha P.",  area: "T. Nagar, Chennai",        material: "Pooja Samagri",        date: "Nov 2024", color: 'linear-gradient(135deg, #8B1A1A 0%, #FFB300 100%)' },
+    { name: "Vikram T.", area: "Koramangala, Bengaluru",   material: "Clay Idol",            date: "Sep 2024", color: 'linear-gradient(135deg, #FFB300 0%, #FF6B00 100%)' },
+    { name: "Meera J.",  area: "Lajpat Nagar, Delhi",      material: "Flowers & Garlands",   date: "Aug 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #8B1A1A 100%)' },
+    { name: "Ankit R.",  area: "Ghaziabad, Delhi NCR",     material: "PoP Idol + Pooja Set", date: "Sep 2024", color: 'linear-gradient(135deg, #FFD700 0%, #FF6B00 100%)' },
 ];
 
 const PARTNER_LOGOS = ['Phool', 'eCoexist', 'Holywaste', 'Sampurnam', 'GreenVidai', 'YamunaClean'];
@@ -80,10 +81,10 @@ export default function ImpactPage() {
                         Collective Numbers
                     </motion.h2>
                     <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
-                        <StatTile value="2840" label="kg kept out of Yamuna" delay={0} />
-                        <StatTile value="1200" label="families served" delay={0.1} />
-                        <StatTile value="340" label="kg flowers → Phool incense" delay={0.2} />
-                        <StatTile value="18" label="NGOs partnered" delay={0.3} />
+                        <StatTile value={String(IMPACT_STATS.totalWeightKg)} label="kg kept out of rivers" delay={0} />
+                        <StatTile value={String(IMPACT_STATS.familiesServed)} label="families served" delay={0.1} />
+                        <StatTile value={String(IMPACT_STATS.flowersKg)} label="kg flowers → Phool incense" delay={0.2} />
+                        <StatTile value={String(IMPACT_STATS.dropPoints)} label="NGOs partnered" delay={0.3} />
                     </div>
                 </div>
 

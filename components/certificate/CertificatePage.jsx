@@ -2,9 +2,9 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import CertificateCard from '@/components/certificate/CertificateCard';
+import { NGO_OPTIONS } from '@/lib/data';
 
 const ITEM_OPTIONS = ['PoP Idol', 'Clay Idol', 'Flowers / Nirmalya', 'Coconut / Prasad', 'Full Pooja Set', 'Multiple Items'];
-const NGO_OPTIONS = ['Phool NGO - Connaught Place', 'eCoexist Hub - Lajpat Nagar', 'Holywaste - Dwarka', 'Sampurnam - Rohini', 'GreenVidai - Saket', 'YamunaClean - Noida Sec 18', 'PrakritiSeva - Pitampura', 'EcoVisarjan - Janakpuri'];
 const KG_MAP = { 'PoP Idol': '4.2', 'Clay Idol': '1.8', 'Flowers / Nirmalya': '1.5', 'Coconut / Prasad': '0.8', 'Full Pooja Set': '6.5', 'Multiple Items': '5.0' };
 
 export default function CertificatePage() {
@@ -25,6 +25,20 @@ export default function CertificatePage() {
         link.download = `Visarjan_Certificate_${name || 'Certificate'}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
+
+        // Record drop-off in database (fire-and-forget)
+        if (name && item && ngo) {
+            fetch('/api/drop-offs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userName: name,
+                    item,
+                    ngoName: ngo,
+                    weightKg: parseFloat(kgAmt),
+                }),
+            }).catch(() => {});
+        }
     };
 
     const shareWhatsApp = () => {

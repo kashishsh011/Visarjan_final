@@ -208,7 +208,7 @@ function DropPointsInner() {
           </p>
         ) : (
           <p style={{ fontFamily: 'var(--font-body)', color: C.plumLt, fontSize: '0.92rem' }}>
-            8 verified eco-drop centres across Delhi · Tap a marker for details
+            17 verified eco-drop centres across India · Tap a marker for details
           </p>
         )}
       </div>

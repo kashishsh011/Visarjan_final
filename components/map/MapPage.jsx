@@ -36,11 +36,13 @@ function MapPageInner() {
         setFilters(prev => prev.includes(mat) ? prev.filter(f => f !== mat) : [...prev, mat]);
     };
 
-    const handleNotify = () => {
+    const handleNotify = async () => {
         if (!name.trim()) return;
-        const existing = JSON.parse(localStorage.getItem('visarjan_signups') || '[]');
-        existing.push({ name, phone, ts: Date.now() });
-        localStorage.setItem('visarjan_signups', JSON.stringify(existing));
+        fetch('/api/citizens', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, phone, area: 'Map Page Signup' }),
+        }).catch(() => {});
         setNotified(true);
         showToast('✅ NGO notified! We\'ll reach out before your visit.');
     };
@@ -63,7 +65,7 @@ function MapPageInner() {
                     transition={{ delay: 0.15, duration: 0.5 }}
                     style={{ color: 'var(--warm-gray)', marginBottom: 28, fontSize: '0.92rem', fontFamily: 'var(--font-body)' }}
                 >
-                    8 verified eco-drop centres across Delhi · Tap a marker for details
+                    17 verified eco-drop centres across India · Tap a marker for details
                 </motion.p>
 
                 {/* Filter chips */}

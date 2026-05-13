@@ -1,5 +1,6 @@
 'use client';     //section-nav.jsx//
 import { useEffect, useState } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 const LINKS = [
     { label: 'Why It Matters', id: 'about' },
@@ -13,6 +14,7 @@ const LINKS = [
 export default function SectionNav() {
     const [visible, setVisible] = useState(false);
     const [active, setActive] = useState('');
+    const { data: session, status } = useSession();
 
     useEffect(() => {
         const onScroll = () => {
@@ -49,7 +51,7 @@ export default function SectionNav() {
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             borderBottom: '1px solid rgba(232,135,26,0.15)',
-            display: 'flex', justifyContent: 'center',
+            display: 'flex', justifyContent: 'center', alignItems: 'center',
             flexWrap: 'wrap', gap: 4,
             padding: '10px 24px',
         }}>
@@ -75,6 +77,40 @@ export default function SectionNav() {
                     {label}
                 </button>
             ))}
+
+            {/* Auth indicator */}
+            <div style={{ marginLeft: 'auto' }}>
+                {status === 'loading' ? null : session ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{
+                            width: 28, height: 28, borderRadius: '50%',
+                            border: '2px solid var(--saffron)',
+                            background: 'linear-gradient(135deg, var(--saffron), #FFB300)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '0.75rem', fontWeight: 700, color: '#fff',
+                            fontFamily: 'var(--font-display)',
+                        }}>
+                            {session.user.name?.charAt(0)?.toUpperCase() || '?'}
+                        </div>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--plum)', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
+                            {session.user.name?.split(' ')[0]}
+                        </span>
+                        <button
+                            onClick={() => signOut()}
+                            style={{ fontSize: '0.8rem', color: 'var(--saffron)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                        >
+                            Sign out
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={() => signIn('google')}
+                        style={{ fontSize: '0.85rem', color: 'var(--saffron)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-body)' }}
+                    >
+                        Sign In
+                    </button>
+                )}
+            </div>
         </nav>
     );
-}
+}
