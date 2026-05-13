@@ -36,20 +36,7 @@ export default function ScrollCanvasHero() {
   const progressRef = useRef(0);
   const beatRefs = useRef({});
 
-  /* ── 1. Preload all frames ── */
-  useEffect(() => {
-    const images = [];
-    framesRef.current = images;
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const img = new window.Image();
-      img.onload = () => { loadedRef.current++; };
-      img.src = `/frames/frame_${String(i).padStart(3, '0')}.jpg`;
-      images.push(img);
-    }
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, []);
-
-  /* ── 2. Draw frame to canvas ── */
+  /* ── 1. Draw frame to canvas ── */
   const drawFrame = useCallback((frameIndex) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -64,6 +51,25 @@ export default function ScrollCanvasHero() {
     ctx.fillRect(0, 0, cw, ch);
     ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
   }, []);
+
+  /* ── 2. Preload all frames ── */
+  useEffect(() => {
+    const images = [];
+    framesRef.current = images;
+    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+      const img = new window.Image();
+      img.onload = () => { 
+        loadedRef.current++; 
+        // Draw the first frame immediately when it loads so we don't start with a blank pink screen
+        if (i === 1) {
+          drawFrame(0);
+        }
+      };
+      img.src = `/frames/frame_${String(i).padStart(3, '0')}.jpg`;
+      images.push(img);
+    }
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [drawFrame]);
 
   /* ── 3. Resize canvas ── */
   useEffect(() => {
