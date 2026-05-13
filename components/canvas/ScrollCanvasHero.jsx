@@ -35,14 +35,15 @@ export default function ScrollCanvasHero() {
   const rafRef = useRef(null);
   const progressRef = useRef(0);
   const beatRefs = useRef({});
+  const drawnFrameRef = useRef(-1);
 
   /* ── 1. Draw frame to canvas ── */
   const drawFrame = useCallback((frameIndex) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return false;
     const ctx = canvas.getContext('2d');
     const img = framesRef.current[frameIndex];
-    if (!img || !img.complete || img.naturalWidth === 0) return;
+    if (!img || !img.complete || img.naturalWidth === 0) return false;
     const { width: cw, height: ch } = canvas;
     const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
     const dw = img.naturalWidth * scale;
@@ -50,6 +51,8 @@ export default function ScrollCanvasHero() {
     ctx.fillStyle = '#F3E8F5';
     ctx.fillRect(0, 0, cw, ch);
     ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+    drawnFrameRef.current = frameIndex;
+    return true;
   }, []);
 
   /* ── 2. Preload all frames ── */
@@ -95,9 +98,12 @@ export default function ScrollCanvasHero() {
       const total = wrapper.offsetHeight - window.innerHeight;
       const progress = Math.min(1, Math.max(0, -rect.top / total));
       progressRef.current = progress;
-      if (Math.abs(progress - lastProgress) > 0.0005) {
+      
+      const targetFrame = Math.round(progress * (TOTAL_FRAMES - 1));
+
+      if (Math.abs(progress - lastProgress) > 0.0005 || drawnFrameRef.current !== targetFrame) {
         lastProgress = progress;
-        drawFrame(Math.round(progress * (TOTAL_FRAMES - 1)));
+        drawFrame(targetFrame);
         Object.keys(BEATS).forEach(beat => {
           const el = beatRefs.current[beat];
           if (el) {
