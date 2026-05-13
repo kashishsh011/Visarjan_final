@@ -1,6 +1,7 @@
 'use client';   //certificate-page.js//
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import CertificateCard from '@/components/certificate/CertificateCard';
 import { NGO_OPTIONS } from '@/lib/data';
 
@@ -8,6 +9,7 @@ const ITEM_OPTIONS = ['PoP Idol', 'Clay Idol', 'Flowers / Nirmalya', 'Coconut / 
 const KG_MAP = { 'PoP Idol': '4.2', 'Clay Idol': '1.8', 'Flowers / Nirmalya': '1.5', 'Coconut / Prasad': '0.8', 'Full Pooja Set': '6.5', 'Multiple Items': '5.0' };
 
 export default function CertificatePage() {
+    const router = useRouter();
     const [name, setName] = useState('');
     const [item, setItem] = useState('');
     const [ngo, setNgo] = useState('');
@@ -26,9 +28,9 @@ export default function CertificatePage() {
         link.href = canvas.toDataURL('image/png');
         link.click();
 
-        // Record drop-off in database (fire-and-forget)
+        // Record drop-off in database
         if (name && item && ngo) {
-            fetch('/api/drop-offs', {
+            await fetch('/api/drop-offs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -37,8 +39,11 @@ export default function CertificatePage() {
                     ngoName: ngo,
                     weightKg: parseFloat(kgAmt),
                 }),
-            }).catch(() => {});
+            }).catch(() => { });
         }
+
+        // Redirect to impact section on the home page so they can see the live update
+        router.push('/#impact-section');
     };
 
     const shareWhatsApp = () => {
@@ -49,6 +54,21 @@ export default function CertificatePage() {
     return (
         <div className="page-wrapper" style={{ paddingTop: 80 }}>
             <div style={{ maxWidth: 1060, margin: '0 auto', padding: '60px 20px 40px' }}>
+
+                {/* Back button */}
+                <motion.a
+                    href="/"
+                    initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4 }}
+                    style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
+                        fontSize: '0.85rem', color: 'var(--saffron)', textDecoration: 'none',
+                        fontFamily: 'var(--font-body)', fontWeight: 500, marginBottom: 24,
+                        cursor: 'pointer',
+                    }}
+                >
+                    ← Back to Home
+                </motion.a>
 
                 {/* Header */}
                 <motion.h1

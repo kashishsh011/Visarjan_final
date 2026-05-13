@@ -1,24 +1,58 @@
 'use client';         //impact-page.js//
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import StatTile from '@/components/sections/StatTile';
 import { IMPACT_STATS } from '@/lib/data';
 
 const COMMUNITY_CARDS = [
-    { name: "Priya S.",  area: "Andheri West, Mumbai",     material: "Ganesh Idol (PoP)",   date: "Sep 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #FFB300 100%)' },
-    { name: "Arjun M.",  area: "HSR Layout, Bengaluru",    material: "Full Pooja Set",       date: "Sep 2024", color: 'linear-gradient(135deg, #8B1A1A 0%, #FF6B00 100%)' },
-    { name: "Fatima K.", area: "Banjara Hills, Hyderabad", material: "Temple Flowers",       date: "Oct 2024", color: 'linear-gradient(135deg, #FFB300 0%, #8B1A1A 100%)' },
-    { name: "Rahul D.",  area: "Noida Sector 62, Delhi",   material: "Clay Idol",            date: "Oct 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #FFD700 100%)' },
-    { name: "Sneha P.",  area: "T. Nagar, Chennai",        material: "Pooja Samagri",        date: "Nov 2024", color: 'linear-gradient(135deg, #8B1A1A 0%, #FFB300 100%)' },
-    { name: "Vikram T.", area: "Koramangala, Bengaluru",   material: "Clay Idol",            date: "Sep 2024", color: 'linear-gradient(135deg, #FFB300 0%, #FF6B00 100%)' },
-    { name: "Meera J.",  area: "Lajpat Nagar, Delhi",      material: "Flowers & Garlands",   date: "Aug 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #8B1A1A 100%)' },
-    { name: "Ankit R.",  area: "Ghaziabad, Delhi NCR",     material: "PoP Idol + Pooja Set", date: "Sep 2024", color: 'linear-gradient(135deg, #FFD700 0%, #FF6B00 100%)' },
+    { name: "Priya S.", area: "Andheri West, Mumbai", material: "Ganesh Idol (PoP)", date: "Sep 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #FFB300 100%)' },
+    { name: "Arjun M.", area: "HSR Layout, Bengaluru", material: "Full Pooja Set", date: "Sep 2024", color: 'linear-gradient(135deg, #8B1A1A 0%, #FF6B00 100%)' },
+    { name: "Fatima K.", area: "Banjara Hills, Hyderabad", material: "Temple Flowers", date: "Oct 2024", color: 'linear-gradient(135deg, #FFB300 0%, #8B1A1A 100%)' },
+    { name: "Rahul D.", area: "Noida Sector 62, Delhi", material: "Clay Idol", date: "Oct 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #FFD700 100%)' },
+    { name: "Sneha P.", area: "T. Nagar, Chennai", material: "Pooja Samagri", date: "Nov 2024", color: 'linear-gradient(135deg, #8B1A1A 0%, #FFB300 100%)' },
+    { name: "Vikram T.", area: "Koramangala, Bengaluru", material: "Clay Idol", date: "Sep 2024", color: 'linear-gradient(135deg, #FFB300 0%, #FF6B00 100%)' },
+    { name: "Meera J.", area: "Lajpat Nagar, Delhi", material: "Flowers & Garlands", date: "Aug 2024", color: 'linear-gradient(135deg, #FF6B00 0%, #8B1A1A 100%)' },
+    { name: "Ankit R.", area: "Ghaziabad, Delhi NCR", material: "PoP Idol + Pooja Set", date: "Sep 2024", color: 'linear-gradient(135deg, #FFD700 0%, #FF6B00 100%)' },
 ];
 
 const PARTNER_LOGOS = ['Phool', 'eCoexist', 'Holywaste', 'Sampurnam', 'GreenVidai', 'YamunaClean'];
 
 export default function ImpactPage() {
     const router = useRouter();
+    const [liveStats, setLiveStats] = useState(null)
+    const [liveCards, setLiveCards] = useState([])
+
+    useEffect(() => {
+        fetch('/api/stats', { cache: 'no-store' })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    setLiveStats(res.data)
+                    if (res.data.recentDropOffs && res.data.recentDropOffs.length > 0) {
+                        setLiveCards(res.data.recentDropOffs)
+                    }
+                }
+            })
+            .catch(() => { }) // silently fall back to hardcoded data on error
+    }, [])
+
+    // Extract color values from local COMMUNITY_CARDS for cycling
+    const CARD_COLORS = COMMUNITY_CARDS.map(c => c.color)
+
+    // Use live drop-offs when available, otherwise fall back to hardcoded cards
+    const displayCards = liveCards.length > 0
+        ? liveCards.map((drop, i) => ({
+            name: drop.userName,
+            area: drop.ngoName,
+            material: drop.item,
+            date: new Date(drop.createdAt).toLocaleDateString('en-IN', {
+                month: 'short',
+                year: 'numeric',
+            }),
+            color: CARD_COLORS[i % CARD_COLORS.length],
+        }))
+        : COMMUNITY_CARDS
 
     return (
         <div className="page-wrapper" style={{ paddingTop: 80 }}>
@@ -44,7 +78,7 @@ export default function ImpactPage() {
 
                 {/* Masonry community grid */}
                 <div className="masonry-grid" style={{ marginBottom: 72 }}>
-                    {COMMUNITY_CARDS.map((card, i) => (
+                    {displayCards.map((card, i) => (
                         <motion.div
                             key={i}
                             initial={{ opacity: 0, y: 40 }}
@@ -55,7 +89,16 @@ export default function ImpactPage() {
                             className="masonry-item"
                             style={{ background: 'var(--warm-white)', border: '1.5px solid rgba(232,135,26,0.22)', borderRadius: 16, padding: '24px 20px', cursor: 'default', boxShadow: '0 4px 20px rgba(61,26,58,0.08)' }}
                         >
-                            <div style={{ fontSize: 32, marginBottom: 10 }}>🌸</div>
+                            <div style={{ fontSize: 32, marginBottom: 10 }}>
+                                {{
+                                    'PoP Idol': '⚱️',
+                                    'Clay Idol': '🏺',
+                                    'Flowers / Nirmalya': '🌸',
+                                    'Coconut / Prasad': '🥥',
+                                    'Full Pooja Set': '🙏',
+                                    'Multiple Items': '🌿'
+                                }[card.material] || '🌱'}
+                            </div>
                             <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.92rem', color: 'var(--plum)', fontWeight: 700, marginBottom: 4 }}>
                                 {card.name}
                             </div>
@@ -63,7 +106,7 @@ export default function ImpactPage() {
                             <div style={{ fontSize: '0.82rem', color: 'var(--warm-brown)', marginBottom: 8 }}>
                                 Disposed: <strong>{card.material}</strong>
                             </div>
-                            <div style={{ fontSize: '0.72rem', color: 'var(--warm-gray)', letterSpacing: '0.06em' }}>{card.date} · 2025</div>
+                            <div style={{ fontSize: '0.72rem', color: 'var(--warm-gray)', letterSpacing: '0.06em' }}>{card.date} </div>
                         </motion.div>
                     ))}
                 </div>
@@ -81,10 +124,10 @@ export default function ImpactPage() {
                         Collective Numbers
                     </motion.h2>
                     <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
-                        <StatTile value={String(IMPACT_STATS.totalWeightKg)} label="kg kept out of rivers" delay={0} />
-                        <StatTile value={String(IMPACT_STATS.familiesServed)} label="families served" delay={0.1} />
+                        <StatTile value={String(liveStats ? liveStats.totalWeightKg : IMPACT_STATS.totalWeightKg)} label="kg kept out of rivers" delay={0} />
+                        <StatTile value={String(liveStats ? liveStats.totalDropOffs : IMPACT_STATS.familiesServed)} label="families served" delay={0.1} />
                         <StatTile value={String(IMPACT_STATS.flowersKg)} label="kg flowers → Phool incense" delay={0.2} />
-                        <StatTile value={String(IMPACT_STATS.dropPoints)} label="NGOs partnered" delay={0.3} />
+                        <StatTile value={String(liveStats ? liveStats.totalNGOs : IMPACT_STATS.dropPoints)} label="NGOs partnered" delay={0.3} />
                     </div>
                 </div>
 

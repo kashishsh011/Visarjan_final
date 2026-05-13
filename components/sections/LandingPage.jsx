@@ -1,10 +1,11 @@
 'use client';    //app-page.js//
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import ScrollCanvasHero from '@/components/canvas/ScrollCanvasHero';
 import WhatDoYouHave from '@/components/sections/WhatDoYouHave';
 import SectionNav from '@/components/sections/SectionNav';
 import DropPointsSection from '@/components/sections/DropPointsSection';
+import { COMMUNITY_CARDS } from '@/lib/data';
 
 /* ── Data ─────────────────────────────────────────── */
 
@@ -33,22 +34,19 @@ const IMPACT_STATS = [
 
 const WHY_CARDS = [
     {
-        icon: '🥀',
-        hindi: 'रास्ते में छूट गई आस्था',
         title: 'Abandoned in Plain Sight',
         desc: 'Broken murtis under trees. Nirmalya heaped at temple gates. Pooja waste left at street corners with nowhere to go. Sacred by intention, forgotten by system.',
+        img: '/images/why-card-1.jpg', // Uploaded image
     },
     {
-        icon: '☠️',
-        hindi: 'नदियों की कीमत',
         title: 'Our Rivers Are Paying the Price',
         desc: 'PoP never dissolves, it sinks releasing lead and mercury into water we call holy. Flowers consume oxygen. What enters the river as offering leaves as poison.',
+        img: '/images/why-card-2.jpg', // Uploaded image
     },
     {
-        icon: '🌱',
-        hindi: 'हरित श्रद्धा',
         title: 'Faith Can Be Sustainable',
         desc: 'Flowers become compost. Coconut shells become fuel. Idol clay returns to earth. When sacred waste finds the right hands, nothing is wasted and nothing is lost.',
+        img: '/images/why-card-3.jpg', // Uploaded image
     },
 ];
 
@@ -68,12 +66,85 @@ function SectionDivider() {
 }
 
 function CounterStrip() {
+    const [live, setLive] = useState(null)
+    useEffect(() => {
+        fetch('/api/stats', { cache: 'no-store' })
+            .then(r => r.json())
+            .then(res => { if (res.success) setLive(res.data) })
+            .catch(() => { })
+    }, [])
+
+    const stats = live
+        ? [
+            { val: live.totalWeightKg >= 1000 ? (live.totalWeightKg / 1000).toFixed(1) + 'T' : String(live.totalWeightKg), lbl: 'kg PoP kept out of Yamuna' },
+            { val: live.totalDropOffs.toLocaleString(), lbl: 'Families served' },
+            { val: IMPACT_STATS[2].val, lbl: 'Flowers converted by Phool' },
+            { val: String(live.totalNGOs), lbl: 'NGO drop points mapped' },
+        ]
+        : IMPACT_STATS
+
     return (
         <div className="impact-strip">
-            {IMPACT_STATS.map(s => (
+            {stats.map(s => (
                 <div key={s.lbl} className="impact-counter">
                     <div className="val">{s.val}</div>
                     <div className="lbl">{s.lbl}</div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function LiveImpactGrid() {
+    const [liveCards, setLiveCards] = useState([])
+    useEffect(() => {
+        fetch('/api/stats', { cache: 'no-store' })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success && res.data.recentDropOffs && res.data.recentDropOffs.length > 0) {
+                    setLiveCards(res.data.recentDropOffs.slice(0, 6))
+                }
+            })
+            .catch(() => { })
+    }, [])
+
+    const getIcon = (item) => ({
+        'PoP Idol': '⚱️',
+        'Clay Idol': '🏺',
+        'Flowers / Nirmalya': '🌸',
+        'Coconut / Prasad': '🥥',
+        'Full Pooja Set': '🙏',
+        'Multiple Items': '🌿'
+    }[item] || '🌱');
+
+    const displayCards = liveCards.length > 0
+        ? liveCards.map((drop) => ({
+            name: drop.userName,
+            area: drop.ngoName,
+            caption: drop.item,
+            emoji: getIcon(drop.item),
+        }))
+        : COMMUNITY_CARDS.slice(0, 6).map(c => ({
+            name: c.name,
+            area: c.area,
+            caption: c.material,
+            emoji: getIcon(c.material),
+        }))
+
+    return (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16, marginBottom: 48 }}>
+            {displayCards.map((item, i) => (
+                <div key={i} className="warm-card" style={{ padding: '24px 20px', borderRadius: 16, background: 'var(--warm-white)', border: '1.5px solid rgba(232,135,26,0.22)' }}>
+                    <div style={{ fontSize: 32, marginBottom: 10 }}>{item.emoji}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.92rem', color: 'var(--plum)', fontWeight: 700, marginBottom: 4 }}>
+                        {item.name}
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', marginBottom: 6 }}>
+                        📍 {item.area}
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--warm-brown)' }}>
+                        Disposed: <strong>{item.caption}</strong>
+                    </div>
                 </div>
             ))}
         </div>
@@ -106,22 +177,99 @@ export default function LandingPage() {
                         </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px,1fr))', gap: 24 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px,1fr))', gap: 24 }}>
                         {WHY_CARDS.map((card, i) => (
-                            <div key={i} className="warm-card" style={{ textAlign: 'center' }}>
-                                <div style={{ fontSize: 40, marginBottom: 16 }}>{card.icon}</div>
-                                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', color: 'var(--plum)', marginBottom: 4 }}>
-                                    {card.title}
-                                </h3>
-                                <p style={{ fontFamily: 'var(--font-hindi)', fontSize: '0.85rem', color: 'var(--saffron)', marginBottom: 12 }}>
-                                    {card.hindi}
-                                </p>
-                                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.92rem', color: 'var(--warm-gray)', lineHeight: 1.7 }}>
-                                    {card.desc}
-                                </p>
+                            <div
+                                key={i}
+                                className="warm-card why-hover-card"
+                                style={{
+                                    position: 'relative',
+                                    height: '340px',
+                                    padding: 0,
+                                    overflow: 'hidden',
+                                    borderRadius: '16px',
+                                    border: '1.5px solid rgba(232,135,26,0.22)'
+                                }}
+                            >
+                                {/* Background Image */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 0, left: 0, right: 0, bottom: 0,
+                                    backgroundImage: `url(${card.img})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    transition: 'transform 0.5s ease',
+                                }} className="why-card-img" />
+
+                                {/* Gradient Overlay to make image pop slightly */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 0, left: 0, right: 0, bottom: 0,
+                                    background: 'linear-gradient(to top, rgba(61,26,58,0.2), transparent)',
+                                }} />
+
+                                {/* Teaser Overlay (Visible before hover) */}
+                                <div
+                                    className="why-teaser"
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: 0, left: 0, right: 0,
+                                        padding: '50px 24px 24px',
+                                        background: 'linear-gradient(to top, rgba(61,26,58,0.9) 0%, rgba(61,26,58,0.6) 40%, transparent 100%)',
+                                        textAlign: 'center',
+                                        transition: 'opacity 0.3s ease',
+                                    }}
+                                >
+                                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: 'white', marginBottom: 4 }}>
+                                        {card.title}
+                                    </h3>
+                                    <p style={{ fontFamily: 'var(--font-hindi)', fontSize: '0.95rem', color: 'rgba(255,255,255,0.75)' }}>
+                                        {card.hindi}
+                                    </p>
+                                </div>
+
+                                {/* Text Content (Fades in on hover) */}
+                                <div
+                                    className="why-card-content"
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0, left: 0, right: 0, bottom: 0,
+                                        padding: '40px 30px',
+                                        background: 'rgba(255,249,242,0.95)', // warm-white semi-transparent
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        textAlign: 'center',
+                                        opacity: 0,
+                                        transition: 'opacity 0.3s ease',
+                                    }}
+                                >
+                                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: 'var(--plum)', marginBottom: 8 }}>
+                                        {card.title}
+                                    </h3>
+                                    <p style={{ fontFamily: 'var(--font-hindi)', fontSize: '0.95rem', color: 'var(--saffron)', marginBottom: 16 }}>
+                                        {card.hindi}
+                                    </p>
+                                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.92rem', color: 'var(--warm-gray)', lineHeight: 1.7 }}>
+                                        {card.desc}
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     </div>
+
+                    <style jsx>{`
+                        .why-hover-card:hover .why-card-img {
+                            transform: scale(1.05);
+                        }
+                        .why-hover-card:hover .why-card-content {
+                            opacity: 1 !important;
+                        }
+                        .why-hover-card:hover .why-teaser {
+                            opacity: 0;
+                        }
+                    `}</style>
                 </div>
             </section>
 
@@ -156,28 +304,11 @@ export default function LandingPage() {
                             सामुदायिक प्रभाव
                         </p>
                         <p style={{ fontFamily: 'var(--font-body)', color: 'var(--warm-gray)', marginTop: 12, maxWidth: 480, margin: '12px auto 0' }}>
-                            Thousands of families across Delhi choosing the responsible path. Here's what we've achieved together.
+                            Thousands of families across India choosing the responsible path. Here's what we've achieved together.
                         </p>
                     </div>
 
-                    {/* Photo grid placeholder */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 48 }}>
-                        {[
-                            { emoji: '🙏', caption: 'Rohini family — clay idol drop' },
-                            { emoji: '🌸', caption: 'Phool partner — 200kg flowers' },
-                            { emoji: '🪔', caption: 'Gurgaon NGO drive — 50 idols' },
-                            { emoji: '🌿', caption: 'Eco-Ganesh from paper pulp' },
-                            { emoji: '🤝', caption: 'eCoexist — Yamuna cleanup day' },
-                            { emoji: '🎨', caption: 'Kids painting eco-idols' },
-                        ].map((item, i) => (
-                            <div key={i} className="warm-card" style={{ textAlign: 'center', padding: '28px 16px', fontSize: 40 }}>
-                                <div style={{ marginBottom: 12 }}>{item.emoji}</div>
-                                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--warm-gray)' }}>
-                                    {item.caption}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
+                    <LiveImpactGrid />
 
                     {/* Partner logos */}
                     <div style={{ textAlign: 'center', marginTop: 16 }}>
@@ -336,19 +467,6 @@ export default function LandingPage() {
                         </div>
                     </div>
 
-                    {/* Roadmap teaser */}
-                    <div style={{
-                        marginTop: 48, padding: '28px 32px',
-                        background: 'rgba(61,26,58,0.05)', borderRadius: 16,
-                        border: '1px dashed rgba(61,26,58,0.15)', textAlign: 'center',
-                    }}>
-                        <p style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--plum)', marginBottom: 8, fontSize: '1.05rem' }}>
-                            Coming Soon: Visarjan 2025 Roadmap
-                        </p>
-                        <p style={{ fontFamily: 'var(--font-body)', color: 'var(--warm-gray)', fontSize: '0.9rem' }}>
-                            Live city-wide immersion dashboards · WhatsApp alerts · Idol pickup scheduling · API for municipality integration
-                        </p>
-                    </div>
                 </div>
             </section>
 
@@ -378,7 +496,7 @@ export default function LandingPage() {
                     ))}
                 </div>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>
-                    © 2025 Visarjan · Made for the rivers of India
+                    © 2026 Visarjan · Made for the people of India
                 </p>
             </footer>
 

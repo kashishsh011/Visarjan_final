@@ -6,11 +6,6 @@ import { ALL_INDIA_AREAS } from '@/lib/data';
 
 const MATERIALS = ['Flowers / Nirmalya', 'PoP Idol', 'Clay Idol', 'Coconut / Prasad', 'Full Pooja Set'];
 
-const ROADMAP = [
-    { icon: '📱', title: 'QR Verification', desc: 'Scan to confirm your drop, earn verified eco-points.' },
-    { icon: '📊', title: 'Real-time NGO Dashboard', desc: 'NGOs see live incoming drop requests and capacity.' },
-    { icon: '🌆', title: 'City Expansion', desc: 'Mumbai, Pune, Hyderabad — beyond Delhi in 2025.' },
-];
 
 function showToast(msg) {
     const el = document.createElement('div');
@@ -33,7 +28,7 @@ export default function PartnerPage() {
                 .then(res => {
                     if (res.success) setUserRole(res.data.role);
                 })
-                .catch(() => {});
+                .catch(() => { });
         }
     }, [session]);
 
@@ -65,13 +60,13 @@ export default function PartnerPage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: cName, phone: cPhone, area: cArea }),
-        }).catch(() => {});
+        }).catch(() => { });
         // Update user role
         await fetch('/api/users/me', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ role: 'citizen' }),
-        }).catch(() => {});
+        }).catch(() => { });
         setUserRole('citizen');
         setCDone(true);
         showToast('✅ You\'re on the list!');
@@ -83,13 +78,13 @@ export default function PartnerPage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: oName, email: oEmail, area: oArea, materials: oMats, timing: oTiming, phone: oContact, lat: 0, lng: 0 }),
-        }).catch(() => {});
+        }).catch(() => { });
         // Update user role
         await fetch('/api/users/me', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ role: 'ngo_admin' }),
-        }).catch(() => {});
+        }).catch(() => { });
         setUserRole('ngo_admin');
         setODone(true);
         showToast('🌿 NGO registered! We\'ll be in touch soon.');
@@ -313,44 +308,6 @@ export default function PartnerPage() {
                         </AnimatePresence>
                     </motion.div>
                 </div>
-
-                {/* Roadmap */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    transition={{ duration: 0.55 }}
-                >
-                    <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                        <div className="section-title" style={{ textAlign: 'center' }}>What's Coming</div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', position: 'relative' }}>
-                        {ROADMAP.map((item, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 28 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: '-60px' }}
-                                transition={{ delay: i * 0.14, duration: 0.5 }}
-                                style={{ flex: '1 1 200px', maxWidth: 260, textAlign: 'center' }}
-                            >
-                                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-                                    <div className="timeline-dot">{item.icon}</div>
-                                </div>
-                                <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.95rem', color: 'var(--plum)', fontWeight: 700, marginBottom: 8 }}>
-                                    {item.title}
-                                </div>
-                                <div style={{ fontSize: '0.82rem', color: 'var(--warm-gray)', lineHeight: 1.7 }}>
-                                    {item.desc}
-                                </div>
-                                {i < ROADMAP.length - 1 && (
-                                    <div style={{ marginTop: 24, fontSize: 20, color: 'rgba(232,135,26,0.4)' }}>→</div>
-                                )}
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
             </div>
         </div>
     );

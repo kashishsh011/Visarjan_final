@@ -3,8 +3,8 @@ import DropOff from '@/models/DropOff'
 import NGO from '@/models/NGO'
 import { withErrorHandling } from '@/lib/apiHandler'
 
-// Cache stats for 60 seconds
-export const revalidate = 60
+// Always fetch live stats dynamically
+export const dynamic = 'force-dynamic'
 
 // GET /api/stats — Aggregate impact numbers
 export const GET = withErrorHandling(async () => {
